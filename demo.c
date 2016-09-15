@@ -90,13 +90,13 @@ int main()
 					posicao = posicao + 200;
 					break;
 				case 6:
-					posicao = posicao + 200;
+					posicao = posicao - 200;
 					break;
 				case 7:
 					posicao = posicao - 200;
 					break;
 				case 8:
-					posicao = posicao - 300;
+					posicao = posicao + 200;
 					break;
 				default:
 					printf("Informe um movimento válido(5 6 7 8).")
