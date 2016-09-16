@@ -1,14 +1,3 @@
-/*************************************************************/
-/*       UNIVERSIDADE FEDERAL DO RIO GRANDE DO NORTE         */
-/*   DEPARTAMENTO DE ENGENHARIA DE COMPUTAÇÃO E AUTOMAÇÃO    */
-/*							     */
-/*   DRIVER DO BRAÇO ROBÓTICO LYNX AL5D PARA A PORTA SERIAL  */
-/*							     */
-/*   DESENVOLVEDORES:					     */
-/*	- ENG. M.SC. DESNES AUGUSTO NUNES DO ROSÁRIO	     */
-/*	- ENG. DANILO CHAVES DE SOUSA ICHIHARA		     */
-/*************************************************************/
-
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -16,7 +5,8 @@
 #include "ufrn_al5d.h"
 
 //Posicao inicial para todos os servos
-#define HOME_POS "#0P1500#1P1500#2P1500#3P1500#4P1500"
+#define HOME_POS "#0P1300#1P1500#2P1500#3P1500#4P1500"
+#define TIME_MOVE 300
 
 int main()
 {
@@ -24,13 +14,9 @@ int main()
 
 	int serial_fd;
 	char *comando;
-	unsigned int movimento;
+	int movimento;
 	unsigned int canal;
-	unsigned int posicao=1500;
-
-	// INICIO DO PROGRAMA DEMO //
-
-	printf("PROGRAMA DEMONSTRACAO INICIADO\n\n");
+	unsigned int posicao=0;
 
 	serial_fd = abrir_porta();
 
@@ -52,11 +38,6 @@ int main()
 
 		comando = (char*) malloc(sizeof(char)*BUFSIZE);
 
-		//////////////////////
-		// PRIMEIRO COMANDO //
-		//////////////////////
-		//printf("\nPRIMEIRO COMANDO - POSICAL INICIAL\n");
-
 		sprintf(comando,"%s",HOME_POS);
 
 		//Escrevendo com teste de escrita
@@ -75,40 +56,21 @@ int main()
 
 		do{
 			memset(comando, 0, BUFSIZE);
+
 			printf("\nInforme o canal de 0 a 4\n");
 			scanf("%d", &canal);
 
-			printf("O canal utilizado %d", canal);
-
-			printf("\nInforme o movimento (5 6 7 8)\n");
-
-			//movimento = getchar();
+			printf("Informe o angulo\n");
 			scanf("%d", &movimento);
 
-			switch (movimento) {
-				case 5:
-					posicao = posicao + 200;
-					break;
-				case 6:
-					posicao = posicao - 200;
-					break;
-				case 7:
-					posicao = posicao - 200;
-					break;
-				case 8:
-					posicao = posicao + 200;
-					break;
-				default:
-					printf("Informe um movimento válido(5 6 7 8).")
-			}
+			if(movimento < 180){
+				posicao = movimento/0.09 + 500;
+			}	
 
-			sprintf(comando,"#%dP%d",canal,trava(canal,posicao));
+			sprintf(comando,"#%dP%dS%d",canal,trava(canal,posicao),TIME_MOVE);
 			puts(comando);
 
 			enviar_comando(comando,serial_fd);
-
-			printf("Pressione enter para continuar...");
-			getchar();
 
 			if (canal == 9) break;
 
